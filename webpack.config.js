@@ -29,7 +29,11 @@ module.exports = {
                     loader: "ts-loader"   //要使用的loader  
                 },
                 exclude: /node_modules/  //编译排除的文件
-            }
+            },
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
         ]
     },
 
