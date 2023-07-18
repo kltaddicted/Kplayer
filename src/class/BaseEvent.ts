@@ -6,7 +6,7 @@ export class BaseEvent {
     constructor() { }
     //事件触发
     emit(event: string, ...args: any[]) {
-        this.$events[event].forEach((cb) => {
+        this.$events[event]?.forEach((cb) => {
             //调用函数
             cb.call(this, ...args)
         })

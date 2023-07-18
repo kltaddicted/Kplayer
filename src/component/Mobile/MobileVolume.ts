@@ -5,6 +5,8 @@ import { addClass } from "../../utils/domUtils";
 import { $, createSvg } from '../../utils/domUtils'
 import { volumePath$1 } from '../../svg/index'
 import './index.css'
+import { EVENT } from "../../events";
+import { MoveEvent, SwipeEvent } from "ntouch.js";
 export class MobileVolume extends Component implements ComponentItem {
     readonly id = 'MobileVolume'
     props: DOMProps
@@ -41,7 +43,36 @@ export class MobileVolume extends Component implements ComponentItem {
         this.el.appendChild(this.iconBox)
         this.el.appendChild(this.progressBox)
     }
+    //事件绑定初始化
     initEvent(): void {
+        let width = this.completedBox.clientWidth
+        this.player.on(EVENT.MOVE_VERTICAL, (e: MoveEvent) => {
+            if (this.timer) {
+                window.clearInterval(this.timer)
+                this.timer = null
+                //让音量条出现
+                this.el.style.display = ''
+                let dy = e.deltaY
+                let scale = (width + -dy) / this.progressBox.clientWidth
+                if (scale < 0) {
+                    scale = 0
+                } else { scale > 1 } {
+                    scale = 1
+                }
+                //控制completedBox在progressBox中的宽度占比
+                this.completedBox.style.width = scale * 100 + '%'
+                this.player.video.volume = scale
+            }
+            this.player.on(EVENT.SLIDE_VERTICAL, (e: SwipeEvent) => {
+                width = this.completedBox.clientWidth
+                this.timer = window.setTimeout(() => {
+                    this.el.style.display = 'none'
+                }, 600)
+            })
 
+            this.player.on(EVENT.VIDEO_CLICK, () => {
+                this.el.style.display = 'none'
+            })
+        })
     }
 }

@@ -11,7 +11,7 @@ const SELECTOR_REG = /([\w-]+)?(?:#([\w-]+))?(?:\.([\w-]+))?/
 //   console.log(identity<Number>(1)) // 1
 export function $<T extends ExternalHTMLElement>(desc?: string, props?: DOMProps, children?: string | Node[]): T {
     let match = []
-    let regArray = SELECTOR_REG.exec(desc as string) as RegExpExecArray
+    let regArray = SELECTOR_REG.exec(desc)
     match[0] = regArray[1] || undefined
     match[1] = regArray[2] || undefined
     match[2] = regArray[3] || undefined
@@ -19,7 +19,6 @@ export function $<T extends ExternalHTMLElement>(desc?: string, props?: DOMProps
     if (match[1]) {
         el.id = match[1] //加上id
     }
-
     match[2] && addClass(el, [match[2]])
     for (let key in props) {
         if (typeof props[key] === 'object') {
@@ -50,7 +49,7 @@ export function addClass(dom: Element, classNames: Array<string>) {
     //数组的浅拷贝
     let classList = dom.classList
     for (let name of classNames) {
-        if (!includeClass) {
+        if (!includeClass(dom, name)) {
             classList.add(name)
         }
     }
@@ -80,4 +79,34 @@ export function createSvg(d?: string, viewBox = '0 0 24 24'): SVGSVGElement {
         svg.appendChild(path)
     }
     return svg
+}
+
+export function getDOMPoint(dom: HTMLElement): { x: number; y: number } {
+    //getBoundingClientRect是某个元素的左，上，右和下分别相对浏览器视窗的位置
+    let rect = dom.getBoundingClientRect()
+    return { x: rect.left, y: rect.top }
+}
+
+export function checkIsMouseInRange(
+    parent: HTMLElement,
+    topChild: HTMLElement,
+    bottom: number,//顶部组件离父组件的距离
+    pageX: number,
+    pageY: number,
+) {
+    let { x, y } = getDOMPoint(parent)
+    let allTop = y - bottom - topChild.clientHeight
+    let allBottom = y + parent.clientHeight
+    let allLeft = x + Math.round(parent.clientWidth / 2) - Math.round(parent.clientWidth / 2)
+    let allRight = x + Math.round(parent.clientWidth / 2) + Math.round(parent.clientWidth / 2)
+    let parentLeft = x
+    let parentRight = x + parent.clientWidth
+    //注意pageY往下值越大
+    if (pageX >= allLeft && pageX <= allRight && pageY >= allTop && pageY <= y) {
+        return true
+    }
+    if (pageX >= parentLeft - 5 && pageX <= parentRight + 5 && pageY >= y - 5 && pageY <= allBottom + 5) {
+        return true
+    }
+    return false
 }
