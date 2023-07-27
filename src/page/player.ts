@@ -12,6 +12,7 @@ import { MoveEvent } from "ntouch.js";
 import { DanmukuController } from "../danmuku/DanmukuController";
 import { getExtension } from "../utils/getExtension";
 import { Mp4Parser } from "../mp4/Mp4Parser";
+import { Mp4MediaPlayer } from "../mp4/MediaPlayer";
 
 export class Player extends Component implements ComponentItem {
     readonly id = 'Player';
@@ -223,7 +224,7 @@ export class Player extends Component implements ComponentItem {
             new Mp4Parser(url, this)
             if (this.playOption.streamPlay) {
                 // 是否启动流式播放
-                // new Mp4MediaPlayer(url, this)
+                new Mp4MediaPlayer(url, this)
             } else {
                 this.video.src = url
             }

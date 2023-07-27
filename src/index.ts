@@ -1,9 +1,11 @@
 import { Player } from './page/player'
 import './index.css'
+import dash from 'dashjs'
 window.onload = function () {
     const player = new Player({
         url: 'https://novaex.cc/fireworks.mp4',
         container: document.getElementById('video'),
+        streamPlay: true,
         thumbnails: {
             // 缩略图设置选项
             col: 1,
